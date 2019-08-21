@@ -1,0 +1,159 @@
+import React, { Component } from 'react';
+//import Button from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+class App extends Component {
+
+  constructor(){
+    super();
+    this.state ={
+      newTodo: 'Add new Todo',
+      updateId:0,
+      Isupdate:'no',
+      todos: [
+        {id:1, name: "Complete React JS Course"},
+        {id:2, name: "Complete React Native Course"},
+        {id:3, name: "Complete JavaScript Course"},
+        {id:4, name: "Join Cult-Fit"},
+        {id:5, name: "Apply For Driving License"},
+      ]
+    };
+
+   this.handleChange = this.handleChange.bind(this);
+   this.addTodo = this.addTodo.bind(this);
+   this.deleteTodo = this.deleteTodo.bind(this);
+   this.updateTodo = this.updateTodo.bind(this);
+   this.updateOrAdd = this.updateOrAdd.bind(this);
+   this.finallyUpdate = this.finallyUpdate.bind(this);
+  };
+
+  handleChange(event)
+  {
+    this.setState(
+      {
+        newTodo: event.target.value
+      }
+    );
+    //console.log(event.target.name, event.target.value);
+  }
+
+  addTodo(event){
+
+    const newTodo = {
+      id: this.state.todos[this.state.todos.length -1].id + 1,
+      name: this.state.newTodo,
+    }
+  
+    const oldTodos = this.state.todos;
+    oldTodos.push(newTodo);
+    this.setState({
+      todos:oldTodos,
+      newTodo:'',
+    } 
+    );
+  }
+
+  deleteTodo(event){
+    console.log(event);
+    var index = event;
+    const oldTodos = this.state.todos;
+    oldTodos.splice(index,1);
+    this.setState({
+      todos:oldTodos,
+    });
+  }
+
+  updateTodo(index){
+    console.log("hello");
+    this.setState({
+      newTodo:this.state.todos[index].name,
+      updateId:this.state.todos[index].id,
+      Isupdate:'yes',
+    });
+    console.log(this.state.newTodo);
+  }
+  finallyUpdate(event){
+
+    const oldTodo = this.state.todos;
+    oldTodo[this.state.updateId - 1].name = this.state.newTodo;
+    this.setState({
+      newTodo:'Add New Todo',
+      updateId:0,
+      Isupdate:'no',
+      todos:oldTodo
+    });
+
+  }
+
+  updateOrAdd(event){
+    const update = this.state.Isupdate;
+      if(update === 'no')
+      {
+        return(
+          <button 
+          className ="btn-info mb-3 form-control"
+          onClick={this.addTodo}>
+            Add Todo
+          </button>
+        );
+       
+      }
+        return(
+          <button 
+          className ="btn-info mb-3 form-control"
+          onClick={this.finallyUpdate}>
+            Update Todo
+          </button>
+        );
+      
+
+    
+  }
+    
+
+  render(){
+
+    console.log(this.state);
+    return (
+      <div className="App">
+      
+        <h2 className="text center p4">Todos</h2>
+        <input
+        type="text" className="my-4 form-control"
+        name="Add List Items"
+        placeholder="Add New Todo"
+        value={this.state.newTodo}
+        onChange={this.handleChange}
+        />
+      {this.updateOrAdd()}
+       
+          <div className="Container">
+            <ul className="list-group">
+              {
+                this.state.todos.map((item, index)=>{
+                    return <li key = {item.id} className ="list-group-item">
+
+                    <button 
+                      className="btn-sm mr-4 btn btn-info"
+                      onClick = {() =>{this.updateTodo(index)}}>
+                      U</button>
+                      {item.name} 
+                      <button 
+                      className="btn-sm ml-4 btn btn-danger"
+                      onClick = {() =>{this.deleteTodo(index)}}>
+                      X</button>
+                    </li>
+                })
+              }
+            </ul>
+          </div>
+      </div>
+    );
+
+  }
+ 
+}
+
+export default App;
+
