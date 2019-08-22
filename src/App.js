@@ -4,6 +4,7 @@ import logo from './logo.svg';
 import './App.css';
 import ListItem from './listItem';
 import axios from 'axios';
+import loading from './loading.gif';
 
 class App extends Component {
 
@@ -14,7 +15,8 @@ class App extends Component {
       editing:false,
       editingIndex:null,
       notification:null,
-      todos: []
+      todos: [],
+      loading :true,
     };
 
     this.apiUrl = 'https://5d5b59254311db0014982723.mockapi.io';
@@ -37,9 +39,14 @@ class App extends Component {
     //console.log("Did Mount");
     const response = await axios.get(`${this.apiUrl}/todos`);
     console.log(response);
-    this.setState({
-      todos:response.data
-    });
+
+    setTimeout(() => {
+      this.setState({
+        todos:response.data,
+        loading:false
+      });
+    },1000);
+    
   }
 
   handleChange(event)
@@ -94,13 +101,16 @@ class App extends Component {
    
   }
 
-  updateTodo(){
+  async updateTodo(){
     console.log("Inside Update");
     const todo = this.state.todos[this.state.editingIndex];
+
+    const response = await axios.put(`${this.apiUrl}/todos/${todo.id}`,  {name: this.state.newTodo})
     todo.name = this.state.newTodo;
 
+    console.log(response);
     const todos = this.state.todos;
-    todos[this.state.editingIndex] = todo;
+    todos[this.state.editingIndex] = response.data;
 
     this.setState({
       todos:todos,
@@ -154,9 +164,14 @@ class App extends Component {
           disabled = {this.state.newTodo.length < 5}>
             {this.state.editing ? 'Update Todo' : 'Add Todo'}
           </button>
+
+          {
+
+            this.state.loading && <img src={loading} alt=""/>
+          }
           <div className="Container">
           {
-            !this.state.editing &&
+            (!this.state.editing || this.state.loading ) &&
               <ul className="list-group">
               {
                 this.state.todos.map((item, index)=>{
